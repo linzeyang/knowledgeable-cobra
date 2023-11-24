@@ -12,13 +12,42 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.10"
 uvicorn = "^0.23.2"
-langserve = {extras = ["server"], version = ">=0.0.30"}
-pydantic = "<2"
+langserve = {extras = ["server"], version = "^0.0.30"}
+pydantic = {extras = ["email"], version = "<2"}
+python-dotenv = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
-langchain-cli = ">=0.0.15"
+langchain-cli = "^0.0.19"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.coverage.run]
+branch = true
+source = [ "./" ]
+
+[tool.coverage.report]
+omit = [ "test_*.py", "conftest.py" ]
+
+[tool.isort]
+py_version = 310
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = "88"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = [ "./" ]
+python_files = [ "test_*.py" ]
+console_output_style = "count"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
