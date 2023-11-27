@@ -4,7 +4,7 @@ import os
 
 from redis import asyncio as redis
 
-URI = str(os.getenv("REDIS_CONNECTION"))
+URI = os.getenv("REDIS_URI", "")
 
 pool = None
 

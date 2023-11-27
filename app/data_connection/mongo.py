@@ -4,15 +4,15 @@ import os
 
 from motor import motor_asyncio as motor
 
-URI = str(os.getenv("MONGO_CONNECTION"))
+URI = os.getenv("MONGO_URI", "")
 
 client = None
 
 
-def get_client():
+def get_client() -> motor.AsyncIOMotorClient:
     global client
 
     if client is None:
-        client = motor.AsyncIOMotorClient(URI)
+        client = motor.AsyncIOMotorClient(URI, uuidRepresentation="standard")
 
     return client

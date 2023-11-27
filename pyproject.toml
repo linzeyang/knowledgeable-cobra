@@ -21,6 +21,7 @@ pymilvus = "^2.3.3"
 qdrant-client = "^1.6.9"
 weaviate-client = "^3.25.3"
 cohere = "^4.36"
+beautifulsoup4 = "^4.12.2"
 
 
 [tool.poetry.group.dev.dependencies]
