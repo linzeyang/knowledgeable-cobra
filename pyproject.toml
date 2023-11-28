@@ -13,14 +13,14 @@ packages = [
 python = ">=3.10,<3.13"
 uvicorn = "^0.23.2"
 langserve = {extras = ["server"], version = "^0.0.30"}
-pydantic = {extras = ["email"], version = "<2"}
+pydantic = {extras = ["email"], version = "^2.5.2"}
 python-dotenv = "^1.0.0"
 redis = {extras = ["hiredis"], version = "^5.0.1"}
 motor = {extras = ["srv"], version = "^3.3.2"}
 pymilvus = "^2.3.3"
 qdrant-client = "^1.6.9"
 weaviate-client = "^3.25.3"
-cohere = "^4.36"
+cohere = "^4.37"
 beautifulsoup4 = "^4.12.2"
 
 

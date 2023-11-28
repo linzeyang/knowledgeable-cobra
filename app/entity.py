@@ -1,10 +1,18 @@
-"""entity.py"""
+"""
+entity.py
+
+Reference: https://www.mongodb.com/developer/languages/python/python-quickstart-fastapi/
+"""
 
 from datetime import date, datetime
 from typing import Optional, Union
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
+from pydantic.functional_validators import BeforeValidator
+from typing_extensions import Annotated
+
+PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class UserAuth(BaseModel):
@@ -12,6 +20,7 @@ class UserAuth(BaseModel):
 
 
 class User(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
     uuid: UUID = Field(default_factory=uuid4)
     username: str = Field(..., min_length=3, max_length=32)
     email: EmailStr = Field(...)
@@ -21,6 +30,7 @@ class User(BaseModel):
 
 
 class Library(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
     uuid: UUID = Field(default_factory=uuid4)
     user_id: UUID = Field(...)
     name: str = Field(..., min_length=3, max_length=32)
@@ -31,7 +41,12 @@ class Library(BaseModel):
     datetime_removed: Optional[datetime] = Field(default=None)
 
 
+class LibraryList(BaseModel):
+    libraries: list[Library]
+
+
 class Document(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
     uuid: UUID = Field(default_factory=uuid4)
     user_id: UUID = Field(...)
     library_id: UUID = Field(...)
@@ -42,16 +57,25 @@ class Document(BaseModel):
     datetime_removed: Optional[datetime] = Field(default=None)
 
 
+class DocumentList(BaseModel):
+    documents: list[Document]
+
+
 class Dialogue(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
     uuid: UUID = Field(default_factory=uuid4)
     user_id: UUID = Field(...)
     library_id: UUID = Field(...)
     llm: str = Field(..., min_length=3, max_length=128)
-    title: str = Field(..., min_length=3, max_length=128)
-    content: str = Field(default="", min_length=0)
+    title: str = Field(default="New Dialogue", min_length=3, max_length=128)
+    content: list = Field(default=[], min_length=0)
     datetime_created: datetime = Field(default_factory=datetime.now)
     datetime_updated: datetime = Field(default_factory=datetime.now)
     datetime_removed: Optional[datetime] = Field(default=None)
+
+
+class DialogueList(BaseModel):
+    dialogues: list[Dialogue]
 
 
 class UserPrompt(BaseModel):

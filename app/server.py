@@ -4,21 +4,34 @@ import os
 from uuid import UUID
 
 from dotenv import find_dotenv, load_dotenv
-from fastapi import Body, FastAPI, Path
+from fastapi import Body, FastAPI, Path, status
 from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from app.authenticator import get_authenticator
 from app.controller import (
+    create_dialogue,
     create_document,
     create_library,
     emb_document,
+    get_dialogue,
+    get_dialogues,
     get_document,
     get_documents,
     get_libraries,
+    get_library,
+    update_dialogue,
 )
 from app.data_connection.mongo import get_client
-from app.entity import Document, Library, UserAuth, UserPrompt
-from app.prompt_processor import get_prompt_processor
+from app.entity import (
+    Dialogue,
+    DialogueList,
+    Document,
+    DocumentList,
+    Library,
+    LibraryList,
+    UserAuth,
+    UserPrompt,
+)
 
 # from langserve import add_routes
 
@@ -69,23 +82,19 @@ async def home():
     return PlainTextResponse("Welcome! This is home page.")
 
 
-@app.get("/library/")
+@app.get("/library/", response_model=LibraryList)
 async def libraries():
-    libraries = await get_libraries(user_id=DUMMY_USER_ID)
-
-    return {"libraries": libraries}
+    return await get_libraries(user_id=DUMMY_USER_ID)
 
 
-@app.post("/library/")
+@app.post("/library/", response_model=Library, status_code=status.HTTP_201_CREATED)
 async def insert_library(instance: Library):
-    resp = await create_library(instance=instance)
-
-    return {"library": resp}
+    return await create_library(instance=instance)
 
 
-@app.get("/library/{library_id}/")
+@app.get("/library/{library_id}/", response_model=Library)
 async def library(library_id: UUID = Path(...)):
-    return {"uuid": library_id}
+    return await get_library(user_id=DUMMY_USER_ID, library_id=library_id)
 
 
 @app.put("/library/{library_id}/")
@@ -98,27 +107,21 @@ async def remove_library(library_id: UUID = Path(...)):
     return {"uuid": library_id}
 
 
-@app.get("/library/{library_id}/document/")
+@app.get("/library/{library_id}/document/", response_model=DocumentList)
 async def documents(library_id: UUID = Path(...)):
-    resp = await get_documents(user_id=DUMMY_USER_ID, library_id=library_id)
-
-    return {"documents": resp}
+    return await get_documents(user_id=DUMMY_USER_ID, library_id=library_id)
 
 
-@app.post("/document/")
+@app.post("/document/", response_model=Document, status_code=status.HTTP_201_CREATED)
 async def upload_document(instance: Document):
     # start a background task?
 
-    resp = await create_document(user_id=DUMMY_USER_ID, instance=instance)
-
-    return {"document": resp}
+    return await create_document(user_id=DUMMY_USER_ID, instance=instance)
 
 
-@app.get("/document/{document_id}/")
+@app.get("/document/{document_id}/", response_model=Document)
 async def document(document_id: UUID = Path(...)):
-    resp = await get_document(user_id=DUMMY_USER_ID, document_id=document_id)
-
-    return {"document": resp}
+    return await get_document(user_id=DUMMY_USER_ID, document_id=document_id)
 
 
 @app.post("/document/{document_id}/embed/")
@@ -133,35 +136,34 @@ async def remove_document(document_id: UUID = Path(...)):
     return {"uuid": document_id}
 
 
-@app.get("/library/{library_id}/dialogue/")
+@app.get("/library/{library_id}/dialogue/", response_model=DialogueList)
 async def dialogues(library_id: UUID = Path(...)):
-    return []
+    return await get_dialogues(user_id=DUMMY_USER_ID, library_id=library_id)
 
 
-@app.post("/library/{library_id}/dialogue/")
-async def create_dialogue(library_id: UUID = Path(...)):
-    ...
-    return {}
+@app.post("/dialogue/", response_model=Dialogue, status_code=status.HTTP_201_CREATED)
+async def insert_dialogue(instance: Dialogue):
+    return await create_dialogue(user_id=DUMMY_USER_ID, instance=instance)
 
 
-@app.get("/dialogue/{dialogue_id}/")
+@app.get("/dialogue/{dialogue_id}/", response_model=Dialogue)
 async def dialogue(dialogue_id: UUID = Path(...)):
-    return {"uuid": dialogue_id}
+    return await get_dialogue(user_id=DUMMY_USER_ID, dialogue_id=dialogue_id)
 
 
-@app.post("/dialogue/{dialogue_id}/prompt/")
+@app.post("/dialogue/{dialogue_id}/")
 async def prompt(
     dialogue_id: UUID = Path(...),
     user_prompt: UserPrompt = Body(...),
 ):
-    response = get_prompt_processor(dialogue_id=dialogue_id)(
-        prompt=user_prompt.content,
+    resp = await update_dialogue(
+        user_id=DUMMY_USER_ID, dialogue_id=dialogue_id, user_prompt=user_prompt
     )
 
     return {
         "dialogue_id": dialogue_id,
         "prompt": user_prompt.content,
-        "response": response,
+        "response": resp,
     }
 
 

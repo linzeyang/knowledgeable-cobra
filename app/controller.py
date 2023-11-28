@@ -1,11 +1,23 @@
 """controller.py"""
 
 import os
+from datetime import datetime
 from uuid import UUID
+
+from langchain.schema.messages import AIMessage, HumanMessage
 
 from app.data_connection.mongo import get_client
 from app.document_processor import process_document
-from app.entity import Document, Library
+from app.entity import (
+    Dialogue,
+    DialogueList,
+    Document,
+    DocumentList,
+    Library,
+    LibraryList,
+    UserPrompt,
+)
+from app.prompt_processor import construct_chat_history, get_prompt_processor
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "knowledgeable-cobra")
 
@@ -21,17 +33,17 @@ async def get_libraries(user_id: UUID):
 
     cursor = collection.find({"user_id": user_id})
 
-    resp = await cursor.to_list(length=10)
+    libraries = await cursor.to_list(length=10)
 
-    print(type(resp), len(resp))
-
-    return resp
+    return LibraryList(libraries=libraries)
 
 
 async def create_library(instance: Library):
     collection = _get_collection(collection_name="library")
 
-    await collection.insert_one(document=instance.dict())
+    await collection.insert_one(
+        document=instance.model_dump(by_alias=True, exclude=["id"])
+    )
 
     return instance
 
@@ -42,7 +54,7 @@ async def get_library(user_id: UUID, library_id: UUID):
     resp = await collection.find_one(
         {
             "user_id": user_id,
-            "library_id": library_id,
+            "uuid": library_id,
         }
     )
 
@@ -66,17 +78,17 @@ async def get_documents(user_id: UUID, library_id: UUID):
 
     cursor = collection.find({"user_id": user_id, "library_id": library_id})
 
-    resp = await cursor.to_list(length=20)
+    documents = await cursor.to_list(length=20)
 
-    print(type(resp), len(resp))
-
-    return resp
+    return DocumentList(documents=documents)
 
 
 async def create_document(user_id: UUID, instance: Document):
     collection = _get_collection(collection_name="document")
 
-    await collection.insert_one(document=instance.dict())
+    await collection.insert_one(
+        document=instance.model_dump(by_alias=True, exclude=["id"])
+    )
 
     return instance
 
@@ -87,7 +99,7 @@ async def get_document(user_id: UUID, document_id: UUID):
     resp = await collection.find_one(
         {
             "user_id": user_id,
-            "document_id": document_id,
+            "uuid": document_id,
         }
     )
 
@@ -95,43 +107,30 @@ async def get_document(user_id: UUID, document_id: UUID):
 
 
 async def emb_document(user_id: UUID, document_id: UUID):
-    # collection = _get_collection(collection_name="document")
+    collection = _get_collection(collection_name="document")
 
-    # document = await collection.find_one(
-    #     {
-    #         "user_id": user_id,
-    #         "document_id": document_id,
-    #     }
-    # )
-
-    document = Document(
-        uuid=document_id,
-        user_id=user_id,
-        library_id=UUID("8a304dd0-45fe-4c8c-ac81-d513ca722fb8"),
-        type="web_page",
-        path="https://realpython.com/python-rich-package/",
-        name="xxx",
+    document = await collection.find_one(
+        {
+            "user_id": user_id,
+            "uuid": document_id,
+        }
     )
 
-    # collection = _get_collection(collection_name="library")
+    collection = _get_collection(collection_name="library")
 
-    # library = await collection.find_one({"library_id": document.library_id})
-
-    library = Library(
-        uuid=document.library_id,
-        user_id=user_id,
-        name="xxx",
-        description="xxx",
-        embedding="cohere",
-        vectordb="qdrant",
+    library = await collection.find_one(
+        {
+            "user_id": user_id,
+            "uuid": document["library_id"],
+        }
     )
 
     result = await process_document(
-        document_type=document.type,
-        document_path=document.path,
-        library_uuid=library.uuid,
-        library_embedding=library.embedding,
-        library_vectordb=library.vectordb,
+        document_type=document["type"],
+        document_path=document["path"],
+        library_uuid=library["uuid"],
+        library_embedding=library["embedding"],
+        library_vectordb=library["vectordb"],
     )
 
     return result
@@ -140,3 +139,73 @@ async def emb_document(user_id: UUID, document_id: UUID):
 async def remove_document(user_id: UUID, document_id: UUID):
     # collection = _get_collection(collection_name="document")
     ...
+
+
+async def create_dialogue(user_id: UUID, instance: Dialogue):
+    collection = _get_collection(collection_name="dialogue")
+
+    await collection.insert_one(
+        document=instance.model_dump(by_alias=True, exclude=["id"])
+    )
+
+    return instance
+
+
+async def get_dialogues(user_id: UUID, library_id: UUID):
+    collection = _get_collection(collection_name="dialogue")
+
+    cursor = collection.find({"user_id": user_id, "library_id": library_id})
+
+    dialogues = await cursor.to_list(length=20)
+
+    return DialogueList(dialogues=dialogues)
+
+
+async def get_dialogue(user_id: UUID, dialogue_id: UUID):
+    collection = _get_collection(collection_name="dialogue")
+
+    resp = await collection.find_one(
+        {
+            "user_id": user_id,
+            "uuid": dialogue_id,
+        }
+    )
+
+    return resp
+
+
+async def update_dialogue(user_id: UUID, dialogue_id: UUID, user_prompt: UserPrompt):
+    dialogue_collection = _get_collection(collection_name="dialogue")
+
+    dialogue = await dialogue_collection.find_one(
+        {"user_id": user_id, "uuid": dialogue_id}
+    )
+
+    library_collection = _get_collection(collection_name="library")
+
+    library = await library_collection.find_one(
+        {"user_id": user_id, "uuid": dialogue["library_id"]}
+    )
+
+    history = construct_chat_history(messages=dialogue["content"])
+
+    response: AIMessage = await get_prompt_processor(
+        embedding=library["embedding"],
+        vectordb=library["vectordb"],
+        collection=library["uuid"],
+        llm=dialogue["llm"],
+    )({"question": user_prompt.content, "chat_history": history})
+
+    history.append(HumanMessage(content=user_prompt.content))
+    history.append(response)
+
+    history = [
+        {"type": message.type, "content": message.content} for message in history
+    ]
+
+    dialogue_collection.update_one(
+        {"user_id": user_id, "uuid": dialogue_id},
+        {"$set": {"content": history, "datetime_updated": datetime.now()}},
+    )
+
+    return response
