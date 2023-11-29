@@ -3,15 +3,24 @@
 import os
 from uuid import UUID
 
-from langchain.document_loaders import WebBaseLoader
+from langchain.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain.embeddings.cohere import CohereEmbeddings
+from langchain.embeddings.dashscope import DashScopeEmbeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores.dashvector import DashVector
 from langchain.vectorstores.milvus import Milvus
 from langchain.vectorstores.qdrant import Qdrant
 from langchain.vectorstores.weaviate import Weaviate
 
+from app.data_connection.dashvector import get_client as get_dashvector_client
 from app.data_connection.weaviate import get_client as get_weaviate_client
+
+
+def get_pdf_loader(document_path: str):
+    loader = PyPDFLoader(file_path=document_path)
+
+    return loader
 
 
 def get_web_page_loader(document_path: str):
@@ -22,6 +31,38 @@ def get_web_page_loader(document_path: str):
 
 def get_cohere_embedding():
     return CohereEmbeddings(max_retries=5, request_timeout=20)
+
+
+def get_dashscope_embedding():
+    return DashScopeEmbeddings(model="text-embedding-v2", max_retries=5)
+
+
+async def get_dashvector_collection(
+    library_embedding: str, library_uuid: UUID, documents: list[Document]
+):
+    client = get_dashvector_client()
+
+    # character must be in [a-zA-Z0-9] and symbols[_, -] and length must be in [3,32]
+    collection_name = library_uuid.hex
+
+    collection = client.get(name=collection_name)
+
+    if not collection:
+        instance = await DashVector.afrom_documents(
+            documents=documents,
+            embedding=EMBEDDING_MAPPING[library_embedding](),
+            collection_name=collection_name,
+        )
+    else:
+        instance = await DashVector(
+            collection=collection,
+            embedding=EMBEDDING_MAPPING[library_embedding](),
+            text_field="text",
+        ).aadd_documents(
+            documents=documents,
+        )
+
+    return instance
 
 
 async def get_milvus_collection(
@@ -99,10 +140,12 @@ async def process_document(
 
 EMBEDDING_MAPPING = {
     "cohere": get_cohere_embedding,
+    "dashscope": get_dashscope_embedding,
 }
 
 
 VECTORDB_MAPPING = {
+    "dashvector": get_dashvector_collection,
     "milvus": get_milvus_collection,
     "qdrant": get_qdrant_collection,
     "weaviate": get_weaviate_collection,
@@ -110,5 +153,6 @@ VECTORDB_MAPPING = {
 
 
 LOADER_MAPPING = {
+    "pdf": get_pdf_loader,
     "web_page": get_web_page_loader,
 }

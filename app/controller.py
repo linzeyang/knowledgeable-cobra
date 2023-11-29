@@ -2,8 +2,10 @@
 
 import os
 from datetime import datetime
+from typing import Optional, Union
 from uuid import UUID
 
+from fastapi import UploadFile
 from langchain.schema.messages import AIMessage, HumanMessage
 
 from app.data_connection.mongo import get_client
@@ -83,11 +85,26 @@ async def get_documents(user_id: UUID, library_id: UUID):
     return DocumentList(documents=documents)
 
 
-async def create_document(user_id: UUID, instance: Document):
+async def create_document(
+    user_id: UUID,
+    instance: Union[Document, UploadFile],
+    library_id: Optional[UUID] = None,
+):
     collection = _get_collection(collection_name="document")
 
+    if isinstance(instance, UploadFile):
+        document = Document(
+            user_id=user_id,
+            library_id=library_id,
+            type=instance.content_type or "file",
+            path="",
+            name=instance.filename or "file",
+        )
+    else:
+        document = instance
+
     await collection.insert_one(
-        document=instance.model_dump(by_alias=True, exclude=["id"])
+        document=document.model_dump(by_alias=True, exclude=["id"])
     )
 
     return instance

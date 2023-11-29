@@ -3,8 +3,7 @@
 import os
 from uuid import UUID
 
-from dotenv import find_dotenv, load_dotenv
-from fastapi import Body, FastAPI, Path, status
+from fastapi import Body, FastAPI, Path, UploadFile, status
 from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from app.authenticator import get_authenticator
@@ -35,8 +34,6 @@ from app.entity import (
 
 # from langserve import add_routes
 
-
-load_dotenv(find_dotenv())
 
 app = FastAPI()
 
@@ -113,10 +110,15 @@ async def documents(library_id: UUID = Path(...)):
 
 
 @app.post("/document/", response_model=Document, status_code=status.HTTP_201_CREATED)
-async def upload_document(instance: Document):
-    # start a background task?
-
+async def accept_document(instance: Document):
     return await create_document(user_id=DUMMY_USER_ID, instance=instance)
+
+
+@app.post(
+    "/document/upload/", response_model=Document, status_code=status.HTTP_201_CREATED
+)
+async def upload_document(file: UploadFile):
+    return await create_document(user_id=DUMMY_USER_ID, instance=file)
 
 
 @app.get("/document/{document_id}/", response_model=Document)

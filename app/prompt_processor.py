@@ -5,18 +5,22 @@ from typing import Callable
 from uuid import UUID
 
 from langchain.chat_models.cohere import ChatCohere
+from langchain.chat_models.tongyi import ChatTongyi
 from langchain.embeddings.cohere import CohereEmbeddings
+from langchain.embeddings.dashscope import DashScopeEmbeddings
 from langchain.schema.messages import (
     AIMessage,
     BaseMessage,
     HumanMessage,
     SystemMessage,
 )
+from langchain.vectorstores.dashvector import DashVector
 from langchain.vectorstores.milvus import Milvus
 from langchain.vectorstores.qdrant import Qdrant
 from langchain.vectorstores.weaviate import Weaviate
 
 from app.chain import get_rag_chain
+from app.data_connection.dashvector import get_client as get_dashvector_client
 from app.data_connection.qdrant import get_client as get_qdrant_client
 from app.data_connection.weaviate import get_client as get_weaviate_client
 
@@ -34,13 +38,30 @@ def build_chain(embedding: str, vectordb: str, collection: UUID, llm: str):
         embedding=EMBEDDING_MAPPING[embedding](), collection=collection
     )
 
-    chat = CHAT_MAPPING[llm](temperature=0)
+    chat = CHAT_MAPPING[llm](temperature=0.1)
 
     return get_rag_chain(retriever=db_collection.as_retriever(), llm=chat)
 
 
 def get_cohere_embedding():
     return CohereEmbeddings(max_retries=5, request_timeout=20)
+
+
+def get_dashscope_embedding():
+    return DashScopeEmbeddings(model="text-embedding-v2", max_retries=5)
+
+
+def get_dashvector_collection(embedding, collection: UUID):
+    client = get_dashvector_client()
+
+    instance = DashVector(
+        # character must be in [a-zA-Z0-9] and symbols[_, -] and length must be in [3,32]
+        collection=client.get(name=collection.hex),
+        embedding=embedding,
+        text_field="text",
+    )
+
+    return instance
 
 
 def get_milvus_collection(embedding, collection: UUID):
@@ -82,6 +103,10 @@ def get_cohere_chat(temperature: float):
     return ChatCohere(temperature=temperature)
 
 
+def get_tongyi_chat(temperature: float):
+    return ChatTongyi(model="qwen-max", model_kwargs={"temperature": temperature})
+
+
 MESSAGE_MAPPING = {
     "ai": AIMessage,
     "human": HumanMessage,
@@ -96,15 +121,20 @@ def construct_chat_history(messages: list[dict[str, str]]) -> list[BaseMessage]:
     ]
 
 
-CHAT_MAPPING = {"cohere": get_cohere_chat}
+CHAT_MAPPING = {
+    "cohere": get_cohere_chat,
+    "dashscope": get_tongyi_chat,
+}
 
 
 EMBEDDING_MAPPING = {
     "cohere": get_cohere_embedding,
+    "dashscope": get_dashscope_embedding,
 }
 
 
 VECTORDB_MAPPING = {
+    "dashvector": get_dashvector_collection,
     "milvus": get_milvus_collection,
     "qdrant": get_qdrant_collection,
     "weaviate": get_weaviate_collection,
