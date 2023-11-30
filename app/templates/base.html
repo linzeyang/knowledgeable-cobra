@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Knowledgeable Cobra" />
+    <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}" type="text/css" />
+    <script src="{{ url_for('static', path='js/htmx.min.js') }}"></script>
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='favicon/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='favicon/favicon-32x32.png') }}">
+    <title>Knowledgeable Cobra</title>
+</head>
+
+<body>
+    {% block header %}
+    {% include "header.html" %}
+    {% endblock %}
+
+    {% block content %}
+    <h1>Welcome to Knowledgeable Cobra</h1>
+    {% endblock %}
+
+    {% block footer %}
+    {% include "footer.html" %}
+    {% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section id="body" class="flex flex-col bg-slate-50 justify-center items-center max-w-screen-lg m-auto">
+    <div class="flex flex-col justify-center items-center py-10">
+        <h2 class="text-2xl font-bold text-slate-800 uppercase">{{ library.name }}</h2>
+        <div id="library_section" class="flex flex-col items-left py-10">
+            <p class="py-3 px-24 first-of-type:pt-0">
+                {{ library.description }}
+            </p>
+            <div class="text-xl font-bold text-slate-800 uppercase">Documents</div>
+            <div>
+                {% for document in documents.documents %}
+                <div>
+                    <p>Type: {{ document.type }}</p>
+                    <p>Name: {{ document.name }}</p>
+                    <p>Path: {{ document.path }}</p>
+                </div>
+                {% else %}
+                <p>No document in the library.</p>
+                {% endfor %}
+            </div>
+            <hr />
+            <div class="text-xl font-bold text-slate-800 uppercase">Dialogues</div>
+            <div>
+                {% for dialogue in dialogues.dialogues %}
+                <div>
+                    <p>Title: <a href="/dialogue/{{ dialogue.uuid }}/">{{ dialogue.title }}</a></p>
+                    <p>Language Model: {{ dialogue.llm }}</p>
+                    <p>Preview: {{ dialogue.content[0]["content"] }}</p>
+                </div>
+                {% else %}
+                <p>No dialogue in the library.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <button class="text-xl font-bold" hx-post="/dialogue/" hx-swap="outerHTML" hx-target="html"
+            hx-trigger="click">CREATE DIALOGUE
+        </button>
+    </div>
+</section>
+
+{% endblock %}

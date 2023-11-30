@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section id="body" class="flex flex-col bg-slate-50 justify-center items-center max-w-screen-lg m-auto">
+    <div class="flex flex-col justify-center items-center py-10">
+        <h2 class="text-2xl font-bold text-slate-800 uppercase">{{ dialogue.title }}</h2>
+        <div id="dialogue_section" class="flex flex-col items-left py-10">
+            <p class="py-3 px-24 first-of-type:pt-0">
+                Language Model: {{ dialogue.llm }}
+            </p>
+            <div class="text-xl font-bold text-slate-800 uppercase">Conversation</div>
+            <div id="messages_section">
+                <hr />
+                {% for message in dialogue.content %}
+                <div>
+                    {% if message.type == "ai" %}
+                    <p>助手：</p>
+                    {% elif message.type == "human" %}
+                    <p>我：</p>
+                    {% else %}
+                    <p>佚名：</p>
+                    {% endif %}
+                    <p>{{ message.content }}</p>
+                </div>
+                <hr />
+                {% else %}
+                <p>No content in the dialogue.</p>
+                {% endfor %}
+                <hr id="messages_end" />
+            </div>
+            <input id="talk" name="user_prompt" type="search" placeholder="Ask assistant..."
+                class="border w-60 py-1 pl-4 pr-10 rounded-3xl h-10 bg-slate-300 hover:bg-slate-800 hover:text-slate-300 focus:bg-slate-800 focus:text-slate-300 transition-all ease-in-out" />
+            <button hx-put="/dialogue/{{ dialogue.uuid }}/" hx-target="#messages_end" hx-swap="afterend" hx-include="#talk"
+                hx-trigger="click">SEND
+            </button>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

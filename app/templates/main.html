@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section id="body" class="flex flex-col bg-slate-50 justify-center items-center max-w-screen-lg m-auto">
+    <p class="py-2">You currently have {{ libraries.libraries|length }} libraries.</p>
+
+    {% for library in libraries.libraries %}
+    <div>
+        <p><a href="/library/{{ library.uuid }}/">{{ library.name }}</a></p>
+        <p>Description: {{ library.description }}</p>
+        <p>Embedding: {{ library.embedding }}</p>
+        <p>VectorDB: {{ library.vectordb }}</p>
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}
