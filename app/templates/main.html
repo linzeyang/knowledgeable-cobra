@@ -2,15 +2,17 @@
 
 {% block content %}
 <section id="body" class="flex flex-col bg-slate-50 justify-center items-center max-w-screen-lg m-auto">
-    <p class="py-2">You currently have {{ libraries.libraries|length }} libraries.</p>
+    <p class="py-2">You currently have {{ libraries.libraries|length }} libraries. Click the name of the library to continue</p>
 
-    {% for library in libraries.libraries %}
-    <div>
-        <p><a href="/library/{{ library.uuid }}/">{{ library.name }}</a></p>
+    {% for library in libraries.libraries[::-1] %}
+    <div class="bg-slate-300">
+        <p class="text-cyan-800"><a href="/library/{{ library.uuid }}/">{{ library.name }}</a></p>
         <p>Description: {{ library.description }}</p>
         <p>Embedding: {{ library.embedding }}</p>
         <p>VectorDB: {{ library.vectordb }}</p>
     </div>
+    <hr />
+    <hr />
     {% endfor %}
 </section>
 {% endblock %}

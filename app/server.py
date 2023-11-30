@@ -86,6 +86,7 @@ async def library_page(request: Request, library_id: UUID = Path(...)):
 
 
 @app.get("/dialogue/{dialogue_id}/")
+@app.post("/dialogue/{dialogue_id}/")
 async def dialogue_page(request: Request, dialogue_id: UUID = Path(...)):
     dialogue = await get_dialogue(user_id=DUMMY_USER_ID, dialogue_id=dialogue_id)
 
@@ -99,10 +100,10 @@ async def dialogue_page(request: Request, dialogue_id: UUID = Path(...)):
 
 
 @app.post("/dialogue/")
-async def dialogue_create(request: Request):
+async def dialogue_create(request: Request, library_id: Annotated[UUID, Form()]):
     instance = Dialogue(
         user_id=DUMMY_USER_ID,
-        library_id=...,  # TODO
+        library_id=library_id,
         llm="dashscope",
     )
 
@@ -239,12 +240,12 @@ async def insert_dialogue(instance: Dialogue):
 
 
 @app.get("/api/dialogue/{dialogue_id}/", response_model=Dialogue)
-async def dialogue(dialogue_id: UUID = Path(...)):
+async def dialogue_get(dialogue_id: UUID = Path(...)):
     return await get_dialogue(user_id=DUMMY_USER_ID, dialogue_id=dialogue_id)
 
 
 @app.post("/api/dialogue/{dialogue_id}/")
-async def prompt(
+async def prompt_send(
     dialogue_id: UUID = Path(...),
     user_prompt: UserPrompt = Body(...),
 ):

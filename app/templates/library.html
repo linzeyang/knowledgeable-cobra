@@ -11,31 +11,34 @@
             <div class="text-xl font-bold text-slate-800 uppercase">Documents</div>
             <div>
                 {% for document in documents.documents %}
-                <div>
-                    <p>Type: {{ document.type }}</p>
+                <div class="bg-slate-300">
+                    <p class="text-cyan-800">Type: {{ document.type }}</p>
                     <p>Name: {{ document.name }}</p>
-                    <p>Path: {{ document.path }}</p>
+                    <p>Path: <a href="{{ document.path }}">{{ document.path }}</a></p>
                 </div>
+                <hr />
                 {% else %}
                 <p>No document in the library.</p>
                 {% endfor %}
             </div>
             <hr />
             <div class="text-xl font-bold text-slate-800 uppercase">Dialogues</div>
+            <p>Click the title of a dialogue to continue</p>
             <div>
                 {% for dialogue in dialogues.dialogues %}
-                <div>
-                    <p>Title: <a href="/dialogue/{{ dialogue.uuid }}/">{{ dialogue.title }}</a></p>
+                <div class="bg-slate-300">
+                    <p class="text-cyan-800">Title: <a href="/dialogue/{{ dialogue.uuid }}/">{{ dialogue.title }}</a></p>
                     <p>Language Model: {{ dialogue.llm }}</p>
-                    <p>Preview: {{ dialogue.content[0]["content"] }}</p>
+                    <p>Preview: {{ dialogue.content[0]["content"] if dialogue.content else "No content" }}</p>
                 </div>
+                <hr />
                 {% else %}
                 <p>No dialogue in the library.</p>
                 {% endfor %}
             </div>
         </div>
-        <button class="text-xl font-bold" hx-post="/dialogue/" hx-swap="outerHTML" hx-target="html"
-            hx-trigger="click">CREATE DIALOGUE
+        <button name="library_id" value="{{ library.uuid }}" class="text-xl font-bold" hx-post="/dialogue/"
+            hx-swap="outerHTML" hx-target="html" hx-trigger="click" type="submit">CREATE DIALOGUE
         </button>
     </div>
 </section>
