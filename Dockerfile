@@ -1,12 +1,12 @@
-FROM python:3.11-slim
+FROM python:3.10.12-slim-bullseye
 
-RUN pip install poetry==1.6.1
+RUN pip install poetry==1.7.1
 
 RUN poetry config virtualenvs.create false
 
 WORKDIR /code
 
-COPY ./pyproject.toml ./README.md ./poetry.lock* ./
+COPY ./pyproject.toml ./README.md ./poetry.lock* .env ./
 
 COPY ./packages ./packages
 
