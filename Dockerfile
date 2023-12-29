@@ -1,4 +1,4 @@
-FROM python:3.10.12-slim-bullseye
+FROM python:3.10.13-slim-bookworm
 
 RUN pip install poetry==1.7.1
 
@@ -6,11 +6,11 @@ RUN poetry config virtualenvs.create false
 
 WORKDIR /code
 
-COPY ./pyproject.toml ./README.md ./poetry.lock* .env ./
+COPY ./pyproject.toml ./poetry.lock* ./
 
 COPY ./packages ./packages
 
-RUN poetry install  --no-interaction --no-ansi --no-root
+RUN poetry install --no-interaction --no-ansi --no-root
 
 COPY ./app ./app
 
