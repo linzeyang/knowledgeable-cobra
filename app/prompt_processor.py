@@ -4,20 +4,15 @@ import os
 from typing import Callable
 from uuid import UUID
 
-from langchain.chat_models.cohere import ChatCohere
-from langchain.chat_models.tongyi import ChatTongyi
-from langchain.embeddings.cohere import CohereEmbeddings
-from langchain.embeddings.dashscope import DashScopeEmbeddings
-from langchain.schema.messages import (
-    AIMessage,
-    BaseMessage,
-    HumanMessage,
-    SystemMessage,
-)
-from langchain.vectorstores.dashvector import DashVector
-from langchain.vectorstores.milvus import Milvus
-from langchain.vectorstores.qdrant import Qdrant
-from langchain.vectorstores.weaviate import Weaviate
+from langchain_community.chat_models.cohere import ChatCohere
+from langchain_community.chat_models.tongyi import ChatTongyi
+from langchain_community.embeddings.cohere import CohereEmbeddings
+from langchain_community.embeddings.dashscope import DashScopeEmbeddings
+from langchain_community.vectorstores.dashvector import DashVector
+from langchain_community.vectorstores.milvus import Milvus
+from langchain_community.vectorstores.qdrant import Qdrant
+from langchain_community.vectorstores.weaviate import Weaviate
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 
 from app.chain import get_rag_chain
 from app.data_connection.dashvector import get_client as get_dashvector_client
@@ -44,6 +39,9 @@ def build_chain(embedding: str, vectordb: str, collection: UUID, llm: str):
 
 
 def get_cohere_embedding():
+    # return CohereEmbeddings(
+    #     model="embed-multilingual-light-v3.0", max_retries=5, request_timeout=20
+    # )
     return CohereEmbeddings(max_retries=5, request_timeout=20)
 
 

@@ -6,7 +6,7 @@ from typing import Optional, Union
 from uuid import UUID
 
 from fastapi import UploadFile
-from langchain.schema.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
 
 from app.data_connection.mongo import get_client
 from app.document_processor import process_document

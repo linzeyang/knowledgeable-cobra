@@ -8,7 +8,7 @@ from fastapi.responses import PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2_fragments.fastapi import Jinja2Blocks
 
-from app.authenticator import get_authenticator
+from app.authenticator import DUMMY_USER_DB, get_authenticator
 from app.config import Settings
 from app.controller import (
     create_dialogue,
@@ -36,7 +36,7 @@ from app.entity import (
 
 # from langserve import add_routes
 
-DUMMY_USER_ID = UUID("cfc0bd70-be32-4d62-85f8-cbdb65ce2ab7")
+DUMMY_USER_ID = DUMMY_USER_DB["joe.bloggs"]
 
 settings = Settings()
 templates = Jinja2Blocks(directory=settings.TEMPLATE_DIR)
@@ -278,4 +278,4 @@ async def remove_dialogue(dialogue_id: UUID = Path(...)):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)

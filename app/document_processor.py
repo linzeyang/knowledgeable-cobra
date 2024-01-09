@@ -3,15 +3,15 @@
 import os
 from uuid import UUID
 
-from langchain.document_loaders import PyPDFLoader, WebBaseLoader
-from langchain.embeddings.cohere import CohereEmbeddings
-from langchain.embeddings.dashscope import DashScopeEmbeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores.dashvector import DashVector
-from langchain.vectorstores.milvus import Milvus
-from langchain.vectorstores.qdrant import Qdrant
-from langchain.vectorstores.weaviate import Weaviate
+from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
+from langchain_community.embeddings.cohere import CohereEmbeddings
+from langchain_community.embeddings.dashscope import DashScopeEmbeddings
+from langchain_community.vectorstores.dashvector import DashVector
+from langchain_community.vectorstores.milvus import Milvus
+from langchain_community.vectorstores.qdrant import Qdrant
+from langchain_community.vectorstores.weaviate import Weaviate
 
 from app.data_connection.dashvector import get_client as get_dashvector_client
 from app.data_connection.weaviate import get_client as get_weaviate_client
@@ -30,6 +30,9 @@ def get_web_page_loader(document_path: str):
 
 
 def get_cohere_embedding():
+    # return CohereEmbeddings(
+    #     model="embed-multilingual-light-v3.0", max_retries=5, request_timeout=20
+    # )
     return CohereEmbeddings(max_retries=5, request_timeout=20)
 
 

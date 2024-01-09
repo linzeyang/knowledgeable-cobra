@@ -1,8 +1,8 @@
 """chain.py"""
 
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.schema import StrOutputParser
-from langchain.schema.runnable import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables import RunnablePassthrough
 
 
 class DummyChain:
