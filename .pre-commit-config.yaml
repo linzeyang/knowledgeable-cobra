@@ -20,6 +20,11 @@ repos:
     rev: 23.12.1
     hooks:
       - id: black
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: ["--ignore=E501,W503"]
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
@@ -29,8 +34,9 @@ repos:
     hooks:
       - id: poetry-check
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.12
+    rev: v0.1.14
     hooks:
       - id: ruff
+        args: ["--config=./pyproject.toml"]
 
 exclude: ^.vscode/

@@ -53,7 +53,7 @@ def get_dashvector_collection(embedding, collection: UUID):
     client = get_dashvector_client()
 
     instance = DashVector(
-        # character must be in [a-zA-Z0-9] and symbols[_, -] and length must be in [3,32]
+        # character must be in [a-zA-Z0-9] and symbols[_,-] and length must be in [3,32]
         collection=client.get(name=collection.hex),
         embedding=embedding,
         text_field="text",
