@@ -12,19 +12,19 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
 uvicorn = {extras = ["standard"], version = "^0.23.2"}
-langserve = {extras = ["server"], version = "^0.0.39"}
+langserve = {extras = ["server"], version = "^0.0.41"}
 pydantic = {extras = ["email"], version = "^2.5.3"}
-python-dotenv = "^1.0.0"
+python-dotenv = "^1.0.1"
 redis = {extras = ["hiredis"], version = "^5.0.1"}
 motor = {extras = ["srv"], version = "^3.3.2"}
-pymilvus = "^2.3.5"
+pymilvus = "^2.3.6"
 qdrant-client = "^1.7.1"
-weaviate-client = "^3.26.1"
-dashscope = "^1.14.0"
+weaviate-client = "^3.26.2"
+dashscope = "^1.14.1"
 dashvector = "^1.0.9"
-cohere = "^4.44"
+cohere = "^4.45"
 beautifulsoup4 = "^4.12.3"
-pypdf = "^4.0.0"
+pypdf = "^4.0.1"
 python-multipart = "^0.0.6"
 jinja2 = "^3.1.3"
 jinja2-fragments = "^1.2.1"
@@ -32,7 +32,7 @@ pydantic-settings = "^2.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
-langchain-cli = "^0.0.20"
+langchain-cli = "^0.0.21"
 pytailwindcss = "^0.2.0"
 
 [build-system]
