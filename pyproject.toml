@@ -13,16 +13,16 @@ packages = [
 python = ">=3.10,<3.13"
 uvicorn = {extras = ["standard"], version = "^0.27.1"}
 langserve = {extras = ["server"], version = "^0.0.47"}
-pydantic = {extras = ["email"], version = "^2.6.3"}
+pydantic = {extras = ["email"], version = "^2.6.4"}
 python-dotenv = "^1.0.1"
-redis = {extras = ["hiredis"], version = "^5.0.2"}
+redis = {extras = ["hiredis"], version = "^5.0.3"}
 motor = {extras = ["srv"], version = "^3.3.2"}
-pymilvus = "^2.3.6"
+pymilvus = "^2.4.0"
 qdrant-client = "^1.8.0"
 weaviate-client = "^3.26.2"
-dashscope = "^1.14.1"
+dashscope = "^1.15.0"
 dashvector = "^1.0.11"
-cohere = "^4.53"
+cohere = "^5.0.1"
 beautifulsoup4 = "^4.12.3"
 pypdf = "^4.1.0"
 python-multipart = "^0.0.9"
