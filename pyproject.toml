@@ -16,13 +16,13 @@ langserve = {extras = ["server"], version = "^0.0.51"}
 pydantic = {extras = ["email"], version = "^2.6.4"}
 python-dotenv = "^1.0.1"
 redis = {extras = ["hiredis"], version = "^5.0.3"}
-motor = {extras = ["srv"], version = "^3.3.2"}
+motor = {extras = ["srv"], version = "^3.4.0"}
 pymilvus = "^2.4.0"
-qdrant-client = "^1.8.0"
+qdrant-client = "^1.8.2"
 weaviate-client = "^3.26.2"
-dashscope = "^1.15.0"
+dashscope = "^1.16.0"
 dashvector = "^1.0.13"
-cohere = "^5.1.2"
+cohere = "^5.1.7"
 beautifulsoup4 = "^4.12.3"
 pypdf = "^4.1.0"
 python-multipart = "^0.0.9"
