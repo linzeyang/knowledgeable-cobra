@@ -1,4 +1,4 @@
-FROM python:3.10.13-slim-bookworm
+FROM python:3.11.9-slim-bookworm
 
 RUN pip install poetry==1.8.2
 
