@@ -18,12 +18,12 @@ pydantic = {extras = ["email"], version = "^2.7.1"}
 python-dotenv = "^1.0.1"
 redis = {extras = ["hiredis"], version = "^5.0.4"}
 motor = {extras = ["srv"], version = "^3.4.0"}
-pymilvus = "^2.4.1"
+pymilvus = "^2.4.3"
 qdrant-client = "^1.9.1"
 weaviate-client = "^3.26.2"
 dashscope = "^1.18.1"
 dashvector = "^1.0.14"
-cohere = "^5.4.0"
+cohere = "^5.5.0"
 beautifulsoup4 = "^4.12.3"
 pypdf = "^4.2.0"
 python-multipart = "^0.0.9"
