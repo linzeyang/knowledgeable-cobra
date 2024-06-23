@@ -11,19 +11,19 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
-uvicorn = {extras = ["standard"], version = "^0.29.0"}
+uvicorn = {extras = ["standard"], version = "^0.30.1"}
 langserve = {extras = ["server"], version = "^0.2.2"}
 langchain = "^0.2.5"
 pydantic = {extras = ["email"], version = "^2.7.4"}
 python-dotenv = "^1.0.1"
 redis = {extras = ["hiredis"], version = "^5.0.6"}
 motor = {extras = ["srv"], version = "^3.4.0"}
-pymilvus = "^2.4.3"
-qdrant-client = "^1.9.1"
+pymilvus = "^2.4.4"
+qdrant-client = "^1.9.2"
 weaviate-client = "^3.26.2"
-dashscope = "^1.19.3"
+dashscope = "^1.20.0"
 dashvector = "^1.0.16"
-cohere = "^5.5.7"
+cohere = "^5.5.8"
 beautifulsoup4 = "^4.12.3"
 pypdf = "^4.2.0"
 python-multipart = "^0.0.9"
